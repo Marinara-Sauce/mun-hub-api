@@ -3,10 +3,10 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from database.database import SessionLocal
-from models.models import CommitteeSessionTypes
-from schemas import committee_schema
-from operations import committee_operations
+from src.database.database import SessionLocal
+from src.models.models import CommitteeSessionTypes
+from src.schemas import committee_schema
+from src.operations import committee_operations
 
 router = APIRouter()
 

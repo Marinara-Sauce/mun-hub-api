@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from database.database import SessionLocal
-from operations import participant_operations
-from schemas import participant_schema
+from src.database.database import SessionLocal
+from src.operations import participant_operations
+from src.schemas import participant_schema
 
 router = APIRouter()
 

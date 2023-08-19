@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from schemas.committee_schema import Committee
+from src.schemas.committee_schema import Committee
 
 
 # speaker list

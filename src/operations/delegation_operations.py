@@ -4,10 +4,10 @@ DELEGATION_ID_PREFIX = "DELEGATION"
 
 from sqlalchemy.orm import Session
 
-from database.create_id import create_id
+from src.database.create_id import create_id
 
-from schemas.delegation_schema import Delegation
-from schemas.delegation_schema import DelegationCreate
+from src.schemas.delegation_schema import Delegation
+from src.schemas.delegation_schema import DelegationCreate
 
 
 def get_delegations(db: Session) -> list[Delegation]:

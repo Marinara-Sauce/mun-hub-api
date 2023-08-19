@@ -2,9 +2,9 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from database.create_id import create_id
-from models.models import Committee, CommitteeSessionTypes
-from schemas.committee_schema import CommitteeCreate
+from src.database.create_id import create_id
+from src.models.models import Committee, CommitteeSessionTypes
+from src.schemas.committee_schema import CommitteeCreate
 
 COMMITTEE_ID_PREFIX = "COMMITTEE"
 

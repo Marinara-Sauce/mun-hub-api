@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-from models.models import CommitteeSessionTypes
-from schemas.participant_schema import Participant
+from src.models.models import CommitteeSessionTypes
+from src.schemas.participant_schema import Participant
 
 
 class CommitteeBase(BaseModel):

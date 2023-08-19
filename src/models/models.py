@@ -3,7 +3,7 @@ import enum
 from sqlalchemy import Column, String, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
-from database.database import Base
+from src.database.database import Base
 
 
 class CommitteeSessionTypes(enum.Enum):

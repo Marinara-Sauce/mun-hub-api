@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-import database.database as database
-from endpoints import participant_endpoints, committee_endpoints, delegation_endpoints
+from src.database import database as database
+from src.endpoints import participant_endpoints, delegation_endpoints, committee_endpoints
 
 app = FastAPI()
 

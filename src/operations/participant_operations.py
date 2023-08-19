@@ -1,14 +1,14 @@
 from typing import Optional
 
-from schemas.committee_schema import Committee
+from src.schemas.committee_schema import Committee
 
 PARTICIPANT_ID_PREFIX = "PARTICIPANT"
 
 from sqlalchemy.orm import Session
 
-from database.create_id import create_id
-from models.models import Participant
-from schemas import participant_schema
+from src.database.create_id import create_id
+from src.models.models import Participant
+from src.schemas import participant_schema
 
 
 # get participants

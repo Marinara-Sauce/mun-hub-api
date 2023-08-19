@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from database.database import SessionLocal
-from schemas.speakerlist_schema import SpeakerList
+from src.database.database import SessionLocal
+from src.schemas.speakerlist_schema import SpeakerList
 
 SPEAKERLIST_ID_PREFIX = "SPEAKERLIST"
 

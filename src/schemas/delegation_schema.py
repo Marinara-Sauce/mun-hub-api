@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from schemas.participant_schema import Participant
+from src.schemas.participant_schema import Participant
 
 
 class DelegationBase(BaseModel):
