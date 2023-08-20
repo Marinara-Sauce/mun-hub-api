@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from sqlalchemy import Column, Integer
 
 from src.models.models import CommitteeSessionTypes
 from src.schemas.participant_schema import Participant
@@ -14,7 +15,7 @@ class CommitteeCreate(CommitteeBase):
 
 
 class Committee(CommitteeBase):
-    committee_id: str
+    committee_id: int
 
     # default values
     committee_description: str = "No description."

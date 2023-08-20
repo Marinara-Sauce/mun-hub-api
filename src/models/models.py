@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Column, String, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
 from src.database.database import Base
@@ -39,7 +39,7 @@ class Committee(Base):
     __tablename__ = "committees"
 
     # id
-    committee_id = Column(String, primary_key=True, index=True)
+    committee_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
 
     # participants in delegation
     participants = relationship("Participant", back_populates="committee")
