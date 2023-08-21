@@ -1,9 +1,18 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.database import database as database
 from src.endpoints import participant_endpoints, delegation_endpoints, committee_endpoints, speakerlist_endpoints
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware, 
+    allow_origins=["*"], 
+    allow_credentials=True, 
+    allow_methods=["*"], 
+    allow_headers=["*"]
+)
 
 # build tables
 database.Base.metadata.create_all(bind=database.engine)
