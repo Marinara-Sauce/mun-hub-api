@@ -12,7 +12,7 @@ class DelegationCreate(DelegationBase):
 
 
 class Delegation(DelegationBase):
-    delegation_id: str
+    delegation_id: int
     participants: list[Participant] = []
 
     class Config:

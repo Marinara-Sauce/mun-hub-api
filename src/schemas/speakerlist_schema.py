@@ -2,8 +2,7 @@ from pydantic import BaseModel
 
 from src.schemas.committee_schema import Committee
 
-
-# speaker list
+# speaker list ENTRY
 
 class SpeakerListEntryBase(BaseModel):
     speakerlistentry_id: str
@@ -16,8 +15,6 @@ class SpeakerListEntryCreate(SpeakerListEntryBase):
 class SpeakerListEntry(SpeakerListEntryBase):
     speakerlist_id: str
     participant_id: str
-
-    speakerlist: SpeakerList
 
     class Config:
         orm_mode = True
@@ -36,11 +33,7 @@ class SpeakerList(SpeakerListBase):
     committee_id: str
 
     committee: list[Committee] = []
-    speakerlistentries: list[SpeakerListEntry] = []
+    speakerlist_entries: list[SpeakerListEntry] = []
 
     class Config:
         orm_mode = True
-
-
-# speaker list ENTRY
-

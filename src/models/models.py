@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Column, String, ForeignKey, Enum
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
 from src.database.database import Base
@@ -21,11 +21,11 @@ class Participant(Base):
     __tablename__ = "participants"
 
     # ids
-    participant_id = Column(String, primary_key=True, index=True)
+    participant_id = Column(Integer, primary_key=True, index=True)
 
     # foreign ids
-    delegation_id = Column(String, ForeignKey("delegations.delegation_id"))
-    committee_id = Column(String, ForeignKey("committees.committee_id"))
+    delegation_id = Column(Integer, ForeignKey("delegations.delegation_id"))
+    committee_id = Column(Integer, ForeignKey("committees.committee_id"))
 
     # relationships
     delegation = relationship("Delegation", back_populates="participants")
@@ -39,7 +39,7 @@ class Committee(Base):
     __tablename__ = "committees"
 
     # id
-    committee_id = Column(String, primary_key=True, index=True)
+    committee_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
 
     # participants in delegation
     participants = relationship("Participant", back_populates="committee")
@@ -56,7 +56,7 @@ class Delegation(Base):
     __tablename__ = "delegations"
 
     # id
-    delegation_id = Column(String, primary_key=True, index=True)
+    delegation_id = Column(Integer, primary_key=True, index=True)
 
     # participants in delegation
     participants = relationship("Participant", back_populates="delegation")
@@ -69,10 +69,10 @@ class SpeakerList(Base):
     __tablename__ = "speakerlists"
 
     # id
-    speakerlist_id = Column(String, primary_key=True, index=True)
+    speakerlist_id = Column(Integer, primary_key=True, index=True)
 
     # foreign ids
-    committee_id = Column(String, ForeignKey("committees.committee_id"))
+    committee_id = Column(Integer, ForeignKey("committees.committee_id"))
 
     # data
     speakerlist_name = Column(String)
@@ -86,11 +86,11 @@ class SpeakerListEntry(Base):
     __tablename__ = "speakerlistentries"
 
     # id
-    speakerlistentry_id = Column(String, primary_key=True, index=True)
+    speakerlistentry_id = Column(Integer, primary_key=True, index=True)
 
     # foreign ids
-    speakerlist_id = Column(String, ForeignKey("speakerlists.speakerlist_id"))
-    participant_id = Column(String, ForeignKey("participants.participant_id"))
+    speakerlist_id = Column(Integer, ForeignKey("speakerlists.speakerlist_id"))
+    participant_id = Column(Integer, ForeignKey("participants.participant_id"))
 
     # relationships
     speakerlist = relationship("SpeakerList", back_populates="speakerlistentries")

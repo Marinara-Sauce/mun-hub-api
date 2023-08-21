@@ -2,3 +2,5 @@ venv
 venv/*
 sql_app.db
 test_main.http
+__pycache__/*
+**/*/__pycache__/*
