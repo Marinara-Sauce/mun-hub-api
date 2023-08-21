@@ -91,7 +91,6 @@ class SpeakerListEntry(Base):
     # foreign ids
     speakerlist_id = Column(Integer, ForeignKey("speakerlists.speakerlist_id"))
     participant_id = Column(Integer, ForeignKey("participants.participant_id"))
-    spoke = Column(Boolean, default=False)
 
     # relationships
     speakerlist = relationship("SpeakerList", back_populates="speakerlistentries")
