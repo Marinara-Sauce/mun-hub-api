@@ -1,12 +1,12 @@
 from typing import Optional
 
+from src.models.models import Delegation
 DELEGATION_ID_PREFIX = "DELEGATION"
 
 from sqlalchemy.orm import Session
 
 from src.database.create_id import create_id
 
-from src.schemas.delegation_schema import Delegation
 from src.schemas.delegation_schema import DelegationCreate
 
 
