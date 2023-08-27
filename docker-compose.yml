@@ -1,15 +1,26 @@
 version: '3'
 services:
-  app:
+  dev:
     build:
       context: .
       dockerfile: Dockerfile  # Path to your Dockerfile for the FastAPI app
     ports:
       - "8000:8000"  # Expose FastAPI app on port 8000
     volumes:
-      - db-data:/app/db
+      - dev-db-data:/app/db
     environment:
       - ENVIRONMENT=development  # Set to production for prod environment
+  prod:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Path to your Dockerfile for the FastAPI app
+    ports:
+      - "8000:80"  # Expose FastAPI app on port 80 (http)
+    volumes:
+      - prod-db-data:/app/db
+    environment:
+      - ENVIRONMENT=production  # Set to production for prod environment
 
 volumes:
-  db-data:
+  prod-db-data:
+  dev-db-data:
