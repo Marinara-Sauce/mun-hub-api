@@ -1,0 +1,11 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Path to your Dockerfile for the FastAPI app
+    ports:
+      - "8000:8000"  # Expose FastAPI app on port 8000
+    environment:
+      - DATABASE_URL=sqlite:///app.db  # Use SQLite database stored in app.db file
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
