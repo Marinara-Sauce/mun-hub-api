@@ -15,7 +15,7 @@ services:
       context: .
       dockerfile: Dockerfile  # Path to your Dockerfile for the FastAPI app
     ports:
-      - "8000:80"  # Expose FastAPI app on port 80 (http)
+      - "80:8000"  # Expose FastAPI app on port 80 (http)
     volumes:
       - prod-db-data:/app/db
     environment:
