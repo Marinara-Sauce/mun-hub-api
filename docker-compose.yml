@@ -1,26 +1,21 @@
-version: '3'
+version: '3.8'
+
 services:
-  dev:
+  api:
     build:
       context: .
-      dockerfile: Dockerfile  # Path to your Dockerfile for the FastAPI app
     ports:
-      - "8000:8000"  # Expose FastAPI app on port 8000
-    volumes:
-      - dev-db-data:/app/db
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    restart: always
     environment:
-      - ENVIRONMENT=development  # Set to production for prod environment
-  prod:
-    build:
-      context: .
-      dockerfile: Dockerfile  # Path to your Dockerfile for the FastAPI app
-    ports:
-      - "80:8000"  # Expose FastAPI app on port 80 (http)
+      POSTGRES_PASSWORD: example
     volumes:
-      - prod-db-data:/app/db
-    environment:
-      - ENVIRONMENT=production  # Set to production for prod environment
+      - postgres-data:/var/lib/postgresql/data
 
 volumes:
-  prod-db-data:
-  dev-db-data:
+  postgres-data:
