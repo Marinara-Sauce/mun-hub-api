@@ -20,18 +20,6 @@ app.add_middleware(
 # build tables
 database.Base.metadata.create_all(bind=database.engine)
 
-# add mock data if dev
-if os.getenv("ENVIRONMENT") != "production":
-    with open("src/database/scripts/populate-mock-data.sql", "r") as sql_file:
-        sql_script = sql_file.readlines()
-
-    with database.engine.connect() as connection:
-        for line in sql_script:
-            connection.execute(text(line))
-            
-        connection.commit()
-        connection.close()
-
 # routers
 app.include_router(committee_endpoints.router)
 app.include_router(delegation_endpoints.router)
