@@ -6,7 +6,9 @@ As stated above, this project is the API and Database for the UI. This project u
 
 # Running the Program
 ## Running Locally
-To run the program locally, ensure you have Python 3.9 or greater installed. Then, run `pip install -r requirements.txt` to download the dependencies. Once the depenencies are installed, run the command `uvicorn main:app` to host the server. The server will run on port 8000 by default. To create a production environment, simply create a new environment variable called `ENVIRONMENT` and set it to `production`.
+Firstly, the program must have a database to connect to. The API uses Postgres. You can launch a pre-configured container with `docker-compose up db -d`.
+
+To run the program locally, ensure you have Python 3.9 or greater installed. Then, run `pip install -r requirements.txt` to download the dependencies. Once the depenencies are installed, run the command `uvicorn main:app` to host the server. The server will run on port 8000 by default.
 
 ## Running Containerized
-This is the best way to run the project. Ensure docker and docker-compose is installed, then simply run `docker-compose up <dev | prod> --build -d` to start the server.
+This is the best way to run the project. Ensure docker and docker-compose is installed, then simply run `docker-compose up --build -d` to start the server and the database.
