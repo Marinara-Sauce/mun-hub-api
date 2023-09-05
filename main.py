@@ -1,5 +1,8 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
 from src.database import database as database
 from src.endpoints import participant_endpoints, delegation_endpoints, committee_endpoints, speakerlist_endpoints
