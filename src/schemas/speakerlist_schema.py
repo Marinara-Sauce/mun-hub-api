@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 from src.schemas.committee_schema import Committee
 
+
 # speaker list ENTRY
 
 class SpeakerListEntryBase(BaseModel):
