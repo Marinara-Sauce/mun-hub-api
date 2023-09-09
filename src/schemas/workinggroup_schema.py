@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from models.models import Committee, Participant, WorkingPaper
+from src.models.models import Participant
 
 # Working Papers
 class WorkingGroupBase(BaseModel):
@@ -10,8 +10,6 @@ class WorkingGroupCreate(WorkingGroupBase):
 
 class WorkingGroup(WorkingGroupBase):
     working_group_id: int
-
-    working_paper: WorkingPaper
 
     working_group_participants: list[Participant] = []
 

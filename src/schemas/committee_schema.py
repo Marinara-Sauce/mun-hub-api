@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer
-from schemas.workingpaper_schema import WorkingPaper
+from src.schemas.workingpaper_schema import WorkingPaper
 
 from src.models.models import CommitteeSessionTypes
 from src.schemas.participant_schema import Participant
@@ -19,6 +19,7 @@ class Committee(CommitteeBase):
     committee_id: int
 
     # default values
+    committee_announcement: str = ""
     committee_description: str = "No description."
     committee_status: CommitteeSessionTypes = CommitteeSessionTypes.OUT_OF_SESSION
 
