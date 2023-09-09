@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer
+from schemas.workingpaper_schema import WorkingPaper
 
 from src.models.models import CommitteeSessionTypes
 from src.schemas.participant_schema import Participant
@@ -22,6 +23,7 @@ class Committee(CommitteeBase):
     committee_status: CommitteeSessionTypes = CommitteeSessionTypes.OUT_OF_SESSION
 
     participants: list[Participant] = []
+    working_papers: list[WorkingPaper] = []
 
     class Config:
         orm_mode = True

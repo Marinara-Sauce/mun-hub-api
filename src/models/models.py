@@ -50,6 +50,7 @@ class Committee(Base):
     committee_abbreviation = Column(String)
     committee_description = Column(String)
     committee_status = Column(Enum(CommitteeSessionTypes))
+    committee_announcement = Column(String)
 
 
 class Delegation(Base):
@@ -94,3 +95,41 @@ class SpeakerListEntry(Base):
 
     # relationships
     speakerlist = relationship("SpeakerList", back_populates="speakerlistentries")
+
+
+class WorkingPaper(Base):
+    __tablename__ = "workingpapers"
+
+    # id
+    working_paper_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
+
+    # relationships
+    committee = relationship("Committee", back_populates="workingpaper")
+    working_group = relationship("WorkingGroup", back_populates="workingpaper")
+
+    # data
+    paper_link = Column(String)
+
+
+class WorkingGroup(Base):
+    __tablename__ = "workinggroup"
+
+    # id
+    working_group_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
+
+    # relationships
+    working_paper = relationship("WorkingPaper", back_populates="workinggroup")
+
+    # data
+    working_group_name = String()
+
+
+class WorkingGroupParticipants(Base):
+    __tablename__ = "R_workinggroupparticipants"
+
+    # id
+    working_group_participant_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
+
+    # M:1 relationship
+    working_group_id = relationship("WorkingGroup", back_populates="workinggroupparticipant")
+    participant_id = relationship("Participant", back_populates="workinggroupparticipant")
