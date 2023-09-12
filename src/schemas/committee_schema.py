@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from sqlalchemy import Column, Integer
 from src.schemas.workingpaper_schema import WorkingPaper
 
 from src.models.models import CommitteeSessionTypes

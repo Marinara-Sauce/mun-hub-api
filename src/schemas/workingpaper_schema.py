@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from src.models.models import WorkingGroup
+from src.schemas.workinggroup_schema import WorkingGroup
 
 # Working Papers
 class WorkingPaperBase(BaseModel):

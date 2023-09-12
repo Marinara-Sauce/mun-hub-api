@@ -121,7 +121,7 @@ class WorkingGroup(Base):
     working_paper = relationship("WorkingPaper", back_populates="workinggroup")
 
     # data
-    working_group_name = String()
+    working_group_name = Column(String, unique=True)
 
 
 class WorkingGroupParticipants(Base):

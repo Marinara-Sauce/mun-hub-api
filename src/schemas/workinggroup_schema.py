@@ -1,9 +1,10 @@
 from pydantic import BaseModel
-from src.models.models import Participant
+from src.schemas.participant_schema import Participant
 
-# Working Papers
+# Working Group
 class WorkingGroupBase(BaseModel):
-    working_group_name: str
+    # working_group_name: str
+    pass
 
 class WorkingGroupCreate(WorkingGroupBase):
     pass
