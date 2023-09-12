@@ -3,8 +3,7 @@ from src.schemas.participant_schema import Participant
 
 # Working Group
 class WorkingGroupBase(BaseModel):
-    # working_group_name: str
-    pass
+    working_group_name: str
 
 class WorkingGroupCreate(WorkingGroupBase):
     pass
