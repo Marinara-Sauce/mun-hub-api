@@ -103,6 +103,9 @@ class WorkingPaper(Base):
     # id
     working_paper_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
 
+    # foreign ids
+    committee_id = Column(Integer, ForeignKey("committees.committee_id"))
+
     # relationships
     committee = relationship("Committee", back_populates="workingpaper")
     working_group = relationship("WorkingGroup", back_populates="workingpaper")
@@ -117,6 +120,9 @@ class WorkingGroup(Base):
     # id
     working_group_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
 
+    # foreign ids
+    working_paper_id = Column(Integer, ForeignKey("workingpapers.working_paper_id"))
+
     # relationships
     working_paper = relationship("WorkingPaper", back_populates="workinggroup")
 
@@ -129,6 +135,10 @@ class WorkingGroupParticipants(Base):
 
     # id
     working_group_participant_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
+
+    # foreign keys
+    working_group_id = Column(Integer, ForeignKey("workinggroup.working_group_id"))
+    participant_id = Column(Integer, ForeignKey("participants.participant_id"))
 
     # M:1 relationship
     working_group_id = relationship("WorkingGroup", back_populates="workinggroupparticipant")
