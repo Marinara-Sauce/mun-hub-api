@@ -12,3 +12,11 @@ To run the program locally, ensure you have Python 3.9 or greater installed. The
 
 ## Running Containerized
 This is the best way to run the project. Ensure docker and docker-compose is installed, then simply run `docker-compose up --build -d` to start the server and the database.
+
+# Database Migrations
+This project uses Alembic to handle database migrations. After making a change to the schema, you can commit it to the database with the following commands:
+
+`alembic revision -m "<some commit message>"`
+`alembic upgrade head`
+
+This command will sync all changes made to the schema with the database.
