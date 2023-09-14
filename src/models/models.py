@@ -140,6 +140,6 @@ class WorkingGroupParticipants(Base):
     working_group_id = Column(Integer, ForeignKey("workinggroup.working_group_id"))
     participant_id = Column(Integer, ForeignKey("participants.participant_id"))
 
-    # M:1 relationship
-    working_group_id = relationship("WorkingGroup", back_populates="workinggroupparticipant")
-    participant_id = relationship("Participant", back_populates="workinggroupparticipant")
+    # M:1 relationships
+    working_group = relationship("WorkingGroup", back_populates="R_workinggroupparticipants")
+    participant = relationship("Participant", back_populates="R_workinggroupparticipants")
