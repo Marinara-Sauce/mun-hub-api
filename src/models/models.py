@@ -44,6 +44,7 @@ class Committee(Base):
     # participants in delegation
     participants = relationship("Participant", back_populates="committee")
     speakerlists = relationship("SpeakerList", back_populates="committee")
+    workingpapers = relationship("WorkingPaper", back_populates="committee")
 
     # data
     committee_name = Column(String)
@@ -107,8 +108,7 @@ class WorkingPaper(Base):
     committee_id = Column(Integer, ForeignKey("committees.committee_id"))
 
     # relationships
-    committee = relationship("Committee", back_populates="workingpaper")
-    working_group = relationship("WorkingGroup", back_populates="workingpaper")
+    committee = relationship("Committee", back_populates="workingpapers")
 
     # data
     paper_link = Column(String)
@@ -123,9 +123,6 @@ class WorkingGroup(Base):
     # foreign ids
     working_paper_id = Column(Integer, ForeignKey("workingpapers.working_paper_id"))
 
-    # relationships
-    working_paper = relationship("WorkingPaper", back_populates="workinggroup")
-
     # data
     working_group_name = Column(String, unique=True)
 
@@ -139,7 +136,3 @@ class WorkingGroupParticipants(Base):
     # foreign keys
     working_group_id = Column(Integer, ForeignKey("workinggroup.working_group_id"))
     participant_id = Column(Integer, ForeignKey("participants.participant_id"))
-
-    # M:1 relationships
-    working_group = relationship("WorkingGroup", back_populates="R_workinggroupparticipants")
-    participant = relationship("Participant", back_populates="R_workinggroupparticipants")
