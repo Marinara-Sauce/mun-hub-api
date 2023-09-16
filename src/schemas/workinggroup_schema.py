@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from src.schemas.participant_schema import Participant
+from src.schemas.delegation_schema import Delegation
 
 # Working Group
 class WorkingGroupBase(BaseModel):
@@ -10,7 +10,7 @@ class WorkingGroupCreate(WorkingGroupBase):
 
 class WorkingGroup(WorkingGroupBase):
     working_group_id: int
-    participants: list[Participant] = []
+    delegations: list[Delegation]
 
     class Config:
         orm_mode = True

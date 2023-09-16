@@ -126,18 +126,18 @@ class WorkingGroup(Base):
     
     # relationships
     working_paper = relationship("WorkingPaper", back_populates="working_group", uselist=False)
-    participants = relationship("Participant", secondary="R_workinggroupparticipants")
+    delegations = relationship("Delegation", secondary="R_workinggroupdelegations")
 
     # data
     working_group_name = Column(String, unique=True)
 
 
-class WorkingGroupParticipants(Base):
-    __tablename__ = "R_workinggroupparticipants"
+class WorkingGroupDelegations(Base):
+    __tablename__ = "R_workinggroupdelegations"
 
     # id
-    working_group_participant_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
+    working_group_delegation_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
 
     # foreign keys
     working_group_id = Column(Integer, ForeignKey("workinggroup.working_group_id"))
-    participant_id = Column(Integer, ForeignKey("participants.participant_id"))
+    delegation_id = Column(Integer, ForeignKey("delegations.delegation_id"))
