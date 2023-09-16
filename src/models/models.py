@@ -126,6 +126,7 @@ class WorkingGroup(Base):
     
     # relationships
     working_paper = relationship("WorkingPaper", back_populates="working_group", uselist=False)
+    participants = relationship("Participant", secondary="R_workinggroupparticipants")
 
     # data
     working_group_name = Column(String, unique=True)

@@ -10,7 +10,7 @@ class WorkingGroupCreate(WorkingGroupBase):
 
 class WorkingGroup(WorkingGroupBase):
     working_group_id: int
-    working_group_participants: list[Participant] = []
+    participants: list[Participant] = []
 
     class Config:
         orm_mode = True
