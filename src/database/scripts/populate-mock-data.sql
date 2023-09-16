@@ -244,7 +244,7 @@ insert into workinggroup (working_group_id, working_paper_id, working_group_name
 insert into workinggroup (working_group_id, working_paper_id, working_group_name) values (5, 5, 'Gazelle, thomson''s');
 insert into workinggroup (working_group_id, working_paper_id, working_group_name) values (6, 6, 'Bear, sloth');
 insert into workinggroup (working_group_id, working_paper_id, working_group_name) values (7, 7, 'Green-winged trumpeter');
-insert into workinggroup (working_group_id, working_paper_id, working_group_name) values (8, 8, 'Green-winged trumpeter');
+insert into workinggroup (working_group_id, working_paper_id, working_group_name) values (8, 8, 'Blue-winged trumpeter');
 insert into workinggroup (working_group_id, working_paper_id, working_group_name) values (9, 9, 'Bear, polar');
 insert into workinggroup (working_group_id, working_paper_id, working_group_name) values (10, 10, 'Fox, crab-eating');
 insert into workinggroup (working_group_id, working_paper_id, working_group_name) values (11, 11, 'Blackish oystercatcher');

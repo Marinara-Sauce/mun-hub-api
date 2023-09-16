@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 from src.schemas.workinggroup_schema import WorkingGroup
 
@@ -10,7 +11,6 @@ class WorkingPaperCreate(WorkingPaperBase):
 
 class WorkingPaper(WorkingPaperBase):
     working_paper_id: int
-
     working_group: WorkingGroup
 
     class Config:
