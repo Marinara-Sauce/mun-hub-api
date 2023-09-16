@@ -211,6 +211,32 @@ insert into participants (participant_id, delegation_id, committee_id, country_a
 insert into participants (participant_id, delegation_id, committee_id, country_alpha_2) values (99, 73, 8, 99);
 insert into participants (participant_id, delegation_id, committee_id, country_alpha_2) values (100, 44, 8, 100);
 
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (1, 8, 'imgur.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (2, 4, 'huffingtonpost.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (3, 4, 'netvibes.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (4, 3, 'oaic.gov.au');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (5, 5, 'chicagotribune.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (6, 10, 'amazon.co.uk');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (7, 6, 'intel.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (8, 4, 'bbb.org');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (9, 9, 'nature.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (10, 7, 'wikispaces.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (11, 5, 'latimes.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (12, 7, 'bigcartel.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (13, 8, 'webmd.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (14, 3, 'rediff.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (15, 4, 'columbia.edu');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (16, 8, 'mit.edu');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (17, 10, 'seesaa.net');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (18, 8, 'desdev.cn');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (19, 10, 'unblog.fr');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (20, 3, 'tripod.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (21, 7, 'reverbnation.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (22, 5, '4shared.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (23, 7, 'tmall.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (24, 4, 'netlog.com');
+insert into workingpapers (working_paper_id, committee_id, paper_link) values (25, 2, 'ow.ly');
+
 insert into workinggroup (working_group_id, working_paper_id, working_group_name) values (1, 1, 'Bulbul, african red-eyed');
 insert into workinggroup (working_group_id, working_paper_id, working_group_name) values (2, 2, 'Eagle, pallas''s fish');
 insert into workinggroup (working_group_id, working_paper_id, working_group_name) values (3, 3, 'Robin, white-throated');
