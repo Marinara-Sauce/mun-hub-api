@@ -355,7 +355,6 @@ insert into "R_workinggroupparticipants" (working_group_participant_id, working_
 insert into "R_workinggroupparticipants" (working_group_participant_id, working_group_id, participant_id) values (90, 17, 6);
 insert into "R_workinggroupparticipants" (working_group_participant_id, working_group_id, participant_id) values (91, 16, 22);
 insert into "R_workinggroupparticipants" (working_group_participant_id, working_group_id, participant_id) values (92, 25, 83);
-insert into "R_workinggroupparticipants" (working_group_participant_id, working_group_id, participant_id) values (93, 8, 92);
 insert into "R_workinggroupparticipants" (working_group_participant_id, working_group_id, participant_id) values (94, 19, 26);
 insert into "R_workinggroupparticipants" (working_group_participant_id, working_group_id, participant_id) values (95, 14, 87);
 insert into "R_workinggroupparticipants" (working_group_participant_id, working_group_id, participant_id) values (96, 15, 99);
