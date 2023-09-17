@@ -109,35 +109,19 @@ class WorkingPaper(Base):
 
     # relationships
     committee = relationship("Committee", back_populates="working_papers")
-    working_group = relationship("WorkingGroup", back_populates="working_paper", uselist=False)
+    delegations = relationship("Delegation", secondary="workingpaperdelegations")
 
     # data
     paper_link = Column(String)
-
-
-class WorkingGroup(Base):
-    __tablename__ = "workinggroup"
-
-    # id
-    working_group_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
-
-    # foreign ids
-    working_paper_id = Column(Integer, ForeignKey("workingpapers.working_paper_id"))
-    
-    # relationships
-    working_paper = relationship("WorkingPaper", back_populates="working_group", uselist=False)
-    delegations = relationship("Delegation", secondary="R_workinggroupdelegations")
-
-    # data
     working_group_name = Column(String, unique=True)
 
 
-class WorkingGroupDelegations(Base):
-    __tablename__ = "R_workinggroupdelegations"
+class WorkingPaperDelegation(Base):
+    __tablename__ = "workingpaperdelegations"
 
     # id
-    working_group_delegation_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
+    working_paper_relationship_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
 
     # foreign keys
-    working_group_id = Column(Integer, ForeignKey("workinggroup.working_group_id"))
+    working_paper_id = Column(Integer, ForeignKey("workingpapers.working_paper_id"))
     delegation_id = Column(Integer, ForeignKey("delegations.delegation_id"))
