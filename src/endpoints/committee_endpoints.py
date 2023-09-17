@@ -1,15 +1,15 @@
+import asyncio
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 
 from src.database.database import SessionLocal
-from src.models.models import CommitteeSessionTypes
+from src.models.models import CommitteePollingTypes, CommitteeSessionTypes
 from src.schemas import committee_schema
 from src.operations import committee_operations
 
 router = APIRouter()
-
 
 # get the database
 def get_db():
@@ -19,6 +19,27 @@ def get_db():
     finally:
         db.close()
 
+
+class CommitteeConnectionManager:
+    def __init__(self):
+        self.active_connections: dict[str, list[WebSocket]] = {}
+    
+    async def connect(self, websocket: WebSocket, committee_id: str):
+        await websocket.accept()
+        if committee_id not in self.active_connections:
+            self.active_connections[committee_id] = []
+            
+        self.active_connections[committee_id].append(websocket)
+    
+    def disconnect(self, websocket: WebSocket, committee_id: str):
+        self.active_connections[committee_id].remove(websocket)
+    
+    async def broadcast_poll_change(self, committee_id: str, poll: CommitteePollingTypes):
+        for con in self.active_connections[committee_id]:
+            await con.send_json(poll)
+ 
+
+manager = CommitteeConnectionManager()
 
 # Get all
 @router.get("/committees", tags=["Committees"])
@@ -66,3 +87,27 @@ def change_committee_status(committee_id: str, new_status: CommitteeSessionTypes
         return {"message": "Status changed."}
     else:
         raise HTTPException(status_code=404, detail=f"Committee of ID {committee_id} not found.")
+
+
+# change poll
+@router.put("/committees/{committee_id}/poll", tags=["Committees"])
+async def change_committee_poll(committee_id: str, new_poll: CommitteePollingTypes, db: Session = Depends(get_db)):
+    response = committee_operations.change_committee_poll(db, committee_id, new_poll)
+    
+    # check for valid change
+    if response:
+        await manager.broadcast_poll_change(committee_id, new_poll)
+        return {"message": "Poll changed."}
+    else:
+        raise HTTPException(status_code=404, detail=f"Committee of ID {committee_id} not found.")
+
+
+# websocket for polls
+@router.websocket("/committees/{committee_id}/ws")
+async def committee_websocket_endpoint(websocket: WebSocket, committee_id: str):
+    await manager.connect(websocket, committee_id)
+    try:
+        while True:
+            heartbeat = await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket, committee_id)

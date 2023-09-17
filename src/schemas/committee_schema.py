@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from src.schemas.workingpaper_schema import WorkingPaper
 
-from src.models.models import CommitteeSessionTypes
+from src.models.models import CommitteePollingTypes, CommitteeSessionTypes
 from src.schemas.participant_schema import Participant
 
 
@@ -21,6 +21,7 @@ class Committee(CommitteeBase):
     committee_announcement: str = ""
     committee_description: str = "No description."
     committee_status: CommitteeSessionTypes = CommitteeSessionTypes.OUT_OF_SESSION
+    committee_poll: CommitteePollingTypes = CommitteePollingTypes.NONE
 
     participants: list[Participant] = []
     working_papers: list[WorkingPaper] = []
