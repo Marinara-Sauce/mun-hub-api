@@ -44,12 +44,14 @@ class Committee(Base):
     # participants in delegation
     participants = relationship("Participant", back_populates="committee")
     speakerlists = relationship("SpeakerList", back_populates="committee")
+    working_papers = relationship("WorkingPaper", back_populates="committee")
 
     # data
     committee_name = Column(String)
     committee_abbreviation = Column(String)
     committee_description = Column(String)
     committee_status = Column(Enum(CommitteeSessionTypes))
+    committee_announcement = Column(String)
 
 
 class Delegation(Base):
@@ -94,3 +96,32 @@ class SpeakerListEntry(Base):
 
     # relationships
     speakerlist = relationship("SpeakerList", back_populates="speakerlistentries")
+
+
+class WorkingPaper(Base):
+    __tablename__ = "workingpapers"
+
+    # id
+    working_paper_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
+
+    # foreign ids
+    committee_id = Column(Integer, ForeignKey("committees.committee_id"))
+
+    # relationships
+    committee = relationship("Committee", back_populates="working_papers")
+    delegations = relationship("Delegation", secondary="workingpaperdelegations")
+
+    # data
+    paper_link = Column(String)
+    working_group_name = Column(String, unique=True)
+
+
+class WorkingPaperDelegation(Base):
+    __tablename__ = "workingpaperdelegations"
+
+    # id
+    working_paper_relationship_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
+
+    # foreign keys
+    working_paper_id = Column(Integer, ForeignKey("workingpapers.working_paper_id"))
+    delegation_id = Column(Integer, ForeignKey("delegations.delegation_id"))
