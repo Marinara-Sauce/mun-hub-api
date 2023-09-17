@@ -12,8 +12,6 @@ class ParticipantCreate(ParticipantBase):
 
 class Participant(ParticipantBase):
     participant_id: int
-    
-    
     class Config:
         orm_mode = True
 
