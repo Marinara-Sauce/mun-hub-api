@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from src.database.create_id import create_id
-from src.models.models import Committee, CommitteeSessionTypes
+from src.models.models import Committee, CommitteePollingTypes, CommitteeSessionTypes
 from src.schemas.committee_schema import CommitteeCreate
 
 COMMITTEE_ID_PREFIX = "COMMITTEE"
@@ -71,7 +71,7 @@ def change_committee_description(db: Session, committee_id: str, new_description
     db.commit()
 
 
-def change_committee_status(db: Session, committee_id: str, new_status: CommitteeSessionTypes):
+def change_committee_status(db: Session, committee_id: int, new_status: CommitteeSessionTypes):
     """
     Change the status of a committee.
 
@@ -91,3 +91,29 @@ def change_committee_status(db: Session, committee_id: str, new_status: Committe
 
     # commit
     db.commit()
+    
+    return True
+    
+
+def change_committee_poll(db: Session, committee_id: str, new_poll: CommitteePollingTypes):
+    """
+    Change the poll of a committee.
+
+    :param db: Database session object
+    :param committee_id: Committee object to change
+    :param new_status: New poll for the community
+    :return: True if successful, False otherwise
+    """
+    # try getting committee object
+    committee = get_committee_by_id(db, committee_id)
+
+    if committee is None:
+        return False
+
+    # update
+    committee.committee_poll = new_poll
+
+    # commit
+    db.commit()
+    
+    return True

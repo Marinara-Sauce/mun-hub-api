@@ -1,4 +1,4 @@
-import enum
+from enum import IntEnum
 
 from sqlalchemy import Column, Integer, String, ForeignKey, Enum
 from sqlalchemy.orm import relationship
@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from src.database.database import Base
 
 
-class CommitteeSessionTypes(enum.Enum):
+class CommitteeSessionTypes(IntEnum):
     """
     Different types of committee sessions.
     """
@@ -17,6 +17,15 @@ class CommitteeSessionTypes(enum.Enum):
     MOD = 5
 
 
+class CommitteePollingTypes(IntEnum):
+    """
+    Different types of polls that can be running on a committee
+    """
+    NONE = 1
+    VOTING = 2
+    ATTENDANCE = 3
+    
+    
 class Participant(Base):
     __tablename__ = "participants"
 
@@ -52,6 +61,7 @@ class Committee(Base):
     committee_description = Column(String)
     committee_status = Column(Enum(CommitteeSessionTypes))
     committee_announcement = Column(String)
+    committee_poll = Column(Enum(CommitteePollingTypes), default=CommitteePollingTypes.NONE)
 
 
 class Delegation(Base):
