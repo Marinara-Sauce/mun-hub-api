@@ -135,3 +135,16 @@ class WorkingPaperDelegation(Base):
     # foreign keys
     working_paper_id = Column(Integer, ForeignKey("workingpapers.working_paper_id"))
     delegation_id = Column(Integer, ForeignKey("delegations.delegation_id"))
+
+
+class AdminUser(Base):
+    __tablename__ = "adminusers"
+
+    # id
+    user_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
+
+    # data
+    first_name = Column(String)
+    last_name = Column(String)
+    username = Column(String, unique=True)
+    password = Column(String)
