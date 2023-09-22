@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from requests import Session
 from src.operations.authentication import generate_token, verify_password
 
@@ -19,17 +20,17 @@ def get_db():
 
 
 # attempt a login
-@router.post("/user", tags=["User"])
-def login(username: str, password: str, db: Session = Depends(get_db)) -> Optional[str]:
-    user: AdminUser = get_user_by_username(db, username)
+@router.post("/token", tags=["User"])
+def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db)):
+    user: AdminUser = get_user_by_username(db, form_data.username)
 
     if not user:
-        raise HTTPException(status_code=404, detail=(f"No users with the username {username}"))
+        raise HTTPException(status_code=404, detail=(f"No users with the username {form_data.username}"))
     
     # check the password
-    if not verify_password(password, user.password):
+    if not verify_password(form_data.password, user.password):
         raise HTTPException(status_code=403, detail=(f"Incorrect Password"))
     
     token = generate_token(user.user_id)
-    return token
+    return {"access_token": token, "token_type": "bearer"}
 

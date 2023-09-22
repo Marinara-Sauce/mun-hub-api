@@ -1,13 +1,15 @@
 import asyncio
-from typing import Optional
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 
 from src.database.database import SessionLocal
-from src.models.models import CommitteePollingTypes, CommitteeSessionTypes
+from src.models.models import AdminUser, CommitteePollingTypes, CommitteeSessionTypes
 from src.schemas import committee_schema
 from src.operations import committee_operations
+
+from src.operations.authentication import get_current_user
 
 router = APIRouter()
 
@@ -61,7 +63,7 @@ def get_committee_by_id(committee_id: str, db: Session = Depends(get_db)) -> Opt
 
 # Create
 @router.post("/committees", tags=["Committees"])
-def create_committee(committee: committee_schema.CommitteeCreate, db: Session = Depends(get_db)):
+def create_committee(committee: committee_schema.CommitteeCreate, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db), ):
     return committee_operations.create_committee(db, committee)
 
 

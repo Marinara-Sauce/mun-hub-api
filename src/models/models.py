@@ -41,7 +41,7 @@ class Participant(Base):
     committee = relationship("Committee", back_populates="participants")
 
     # country information (use ISO database to get any additional information)
-    country_alpha_2 = Column(String, primary_key=True, index=True)
+    country_alpha_2 = Column(String, primary_key=True, index=True, nullable=True)
 
 
 class Committee(Base):

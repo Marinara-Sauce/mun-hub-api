@@ -1,10 +1,14 @@
+from typing import Annotated
 import bcrypt
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 import jwt
 import datetime
 
 SECRET_KEY = 'example-key'
+ALGORITHM = "HS256"
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def hash_password(password: str, salt_rounds=12):
     """
@@ -44,7 +48,7 @@ def generate_token(user_id: int, expiration_minutes=30):  # TODO: Make this conf
         'user_id': user_id,
         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=expiration_minutes)
     }
-    token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
     return token
 
 
@@ -56,7 +60,7 @@ def verify_token(token: str):
     :return: The user_id if the token is valid, None otherwise.
     """
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload['user_id']
     except jwt.ExpiredSignatureError:
         # Token has expired
@@ -64,6 +68,18 @@ def verify_token(token: str):
     except jwt.DecodeError:
         # Token is invalid
         return None
+    
+
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    user = verify_token(token)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return user
+    
 
 if __name__ == "__main__":
     user_id = 123
