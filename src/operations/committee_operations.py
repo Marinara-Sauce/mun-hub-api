@@ -3,8 +3,8 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from src.database.create_id import create_id
-from src.models.models import CommitteePollingTypes, CommitteeSessionTypes
-from src.schemas.committee_schema import Committee, CommitteeBase, CommitteeCreate
+from src.models.models import Committee, CommitteePollingTypes, CommitteeSessionTypes
+from src.schemas.committee_schema import CommitteeCreate
 
 COMMITTEE_ID_PREFIX = "COMMITTEE"
 
@@ -14,12 +14,12 @@ def get_committees(db: Session):
 
 
 def create_committee(db: Session, user: CommitteeCreate):
-    db_committee = Committee(**user.model_dump())
-    
-    db.add(db_committee)
+    db_user = Committee(committee_id=create_id(COMMITTEE_ID_PREFIX),
+                        country_alpha_2=user.country_alpha_2)
+    db.add(db_user)
     db.commit()
-    db.refresh(db_committee)
-    return db_committee
+    db.refresh(db_user)
+    return db_user
 
 
 def delete_committee(db: Session, committee_id: str):
