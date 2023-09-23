@@ -36,16 +36,16 @@ def verify_password(in_password: str, hashed_password: str):
     return bcrypt.checkpw(in_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 
-def generate_token(user_id: int, expiration_minutes=30):  # TODO: Make this configurable
+def generate_token(username: str, expiration_minutes=30):  # TODO: Make this configurable
     """
     Generates a JWT token for user authentication.
 
-    :param user_id: The user's unique identifier.
+    :param username: The user's unique username.
     :param expiration_minutes: Token expiration time in minutes (default is 30 minutes).
     :return: A JWT token as a string.
     """
     payload = {
-        'user_id': user_id,
+        'username': username,
         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=expiration_minutes)
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
@@ -61,7 +61,7 @@ def verify_token(token: str):
     """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload['user_id']
+        return payload['username']
     except jwt.ExpiredSignatureError:
         # Token has expired
         return None

@@ -31,6 +31,6 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Sessio
     if not verify_password(form_data.password, user.password):
         raise HTTPException(status_code=403, detail=(f"Incorrect Password"))
     
-    token = generate_token(user.user_id)
-    return {"access_token": token, "token_type": "bearer"}
+    token = generate_token(user.username)
+    return {"access_token": token, "token_type": "bearer", "expiration": 30, "username": user.username, "first_name": user.first_name} # TODO: Not hard code this
 
