@@ -80,23 +80,3 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         )
     return user
     
-
-if __name__ == "__main__":
-    user_id = 123
-    plaintext_password = "password"
-    
-    # Hash the password
-    hashed_password = hash_password(plaintext_password)
-
-    print(hashed_password)
-    
-    # Generate a token
-    token = generate_token(user_id)
-    print("JWT Token:", token)
-    
-    # Verify a token
-    user_id_from_token = verify_token(token)
-    if user_id_from_token:
-        print(f"Token is valid. User ID: {user_id_from_token}")
-    else:
-        print("Token is invalid.")
