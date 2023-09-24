@@ -1,6 +1,6 @@
 from enum import IntEnum
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
 from src.database.database import Base
@@ -41,7 +41,7 @@ class Participant(Base):
     committee = relationship("Committee", back_populates="participants")
 
     # country information (use ISO database to get any additional information)
-    country_alpha_2 = Column(String, primary_key=True, index=True)
+    country_alpha_2 = Column(String, primary_key=True, index=True, nullable=True)
 
 
 class Committee(Base):
@@ -135,3 +135,17 @@ class WorkingPaperDelegation(Base):
     # foreign keys
     working_paper_id = Column(Integer, ForeignKey("workingpapers.working_paper_id"))
     delegation_id = Column(Integer, ForeignKey("delegations.delegation_id"))
+
+
+class AdminUser(Base):
+    __tablename__ = "adminusers"
+
+    # id
+    user_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
+
+    # data
+    first_name = Column(String)
+    last_name = Column(String)
+    username = Column(String, unique=True)
+    password = Column(String)
+    super_user = Column(Boolean, default=False)
