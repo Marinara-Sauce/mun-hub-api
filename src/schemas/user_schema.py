@@ -15,6 +15,7 @@ class AdminUser(AdminUserBase):
 
     first_name: str
     last_name: str
-
+    super_user: bool = False
+    
     class Config:
-        orm_mode = True
+        from_attributes = True

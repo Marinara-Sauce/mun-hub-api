@@ -1,6 +1,6 @@
 from enum import IntEnum
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
 from src.database.database import Base
@@ -148,3 +148,4 @@ class AdminUser(Base):
     last_name = Column(String)
     username = Column(String, unique=True)
     password = Column(String)
+    super_user = Column(Boolean, default=False)
