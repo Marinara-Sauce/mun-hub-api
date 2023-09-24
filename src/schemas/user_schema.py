@@ -3,11 +3,10 @@ from pydantic import BaseModel
 
 class AdminUserBase(BaseModel):
     username: str
-    password: str
 
 
 class AdminUserCreate(AdminUserBase):
-    pass
+    password: str
 
 
 class AdminUser(AdminUserBase):
