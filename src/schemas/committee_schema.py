@@ -27,4 +27,4 @@ class Committee(CommitteeBase):
     working_papers: list[WorkingPaper] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -2,11 +2,8 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from src.database.create_id import create_id
 from src.models.models import Committee, CommitteePollingTypes, CommitteeSessionTypes
 from src.schemas.committee_schema import CommitteeCreate
-
-COMMITTEE_ID_PREFIX = "COMMITTEE"
 
 
 def get_committees(db: Session):
@@ -14,28 +11,16 @@ def get_committees(db: Session):
 
 
 def create_committee(db: Session, user: CommitteeCreate):
-    db_user = Committee(committee_id=create_id(COMMITTEE_ID_PREFIX),
-                        country_alpha_2=user.country_alpha_2)
+    db_user = Committee(
+        committee_name=user.committee_name, 
+        committee_abbreviation=user.committee_abbreviation
+    )
+    
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    
     return db_user
-
-
-def delete_committee(db: Session, committee_id: str):
-    # verify that the committee exists
-    if db.query(Committee).filter(Committee.committee_id == committee_id).first().rowcount == 0:
-        raise Exception("Committee does not exist. [committee_id=" + committee_id + "]")
-
-    # delete element
-    q = db.query(Committee).filter(Committee.committee_id == committee_id).delete()
-
-    # check for success
-    if q.rowcount == 0:
-        db.rollback()
-        raise Exception("Delete failed." + q)
-    else:
-        db.commit()
 
 
 def get_committee_by_id(db: Session, committee_id: str) -> Optional[Committee]:
@@ -49,47 +34,14 @@ def get_committee_by_id(db: Session, committee_id: str) -> Optional[Committee]:
     return db.query(Committee).filter(Committee.committee_id == committee_id).first()
 
 
-def change_committee_description(db: Session, committee_id: str, new_description: str) -> bool:
-    """
-    Change the description of a committee.
-
-    :param db: Database session object
-    :param committee_id: Committee object to change
-    :param new_description: New description of the committee
-    :return: True if successful, False otherwise
-    """
-    # try getting committee object
-    committee = get_committee_by_id(db, committee_id)
-
-    if committee is None:
+def patch_committee(db: Session, committee: Committee) -> Optional[Committee]:
+    old_committee = get_committee_by_id(db, committee.committee_id)
+    
+    if old_committee is None:
         return False
-
-    # update
-    committee.committee_description = new_description
-
-    # commit
-    db.commit()
-
-
-def change_committee_status(db: Session, committee_id: int, new_status: CommitteeSessionTypes):
-    """
-    Change the status of a committee.
-
-    :param db: Database session object
-    :param committee_id: Committee object to change
-    :param new_status: New status of the committee
-    :return: True if successful, False otherwise
-    """
-    # try getting committee object
-    committee = get_committee_by_id(db, committee_id)
-
-    if committee is None:
-        return False
-
-    # update
-    committee.committee_status = new_status
-
-    # commit
+    
+    old_committee = committee
+    
     db.commit()
     
     return True
@@ -116,4 +68,16 @@ def change_committee_poll(db: Session, committee_id: str, new_poll: CommitteePol
     # commit
     db.commit()
     
+    return True
+
+
+def delete_committee(db: Session, committee_id: str):
+    committee = db.query(Committee).filter(Committee.committee_id == committee_id).first()
+    
+    if committee is None:
+        return False
+    
+    db.delete(committee)
+    db.commit()
+
     return True

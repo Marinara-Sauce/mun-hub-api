@@ -67,28 +67,15 @@ def create_committee(committee: committee_schema.CommitteeCreate, user: Annotate
     return committee_operations.create_committee(db, committee)
 
 
-# Change description
-@router.put("/committees/{committee_id}/description", tags=["Committees"])
-def change_committee_description(committee_id: str, new_description: str, db: Session = Depends(get_db)):
-    response = committee_operations.change_committee_description(db, committee_id, new_description)
-
-    # check for valid change
+# Patch committee
+@router.patch("/committees", tags=["Committees"])
+def patch_committee(committee: committee_schema.Committee, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+    response = committee_operations.patch_committee(db, committee)
+    
     if response:
-        return {"message": "Description changed."}
-    else:
-        raise HTTPException(status_code=404, detail=f"Committee of ID {committee_id} not found.")
-
-
-# change status
-@router.put("/committees/{committee_id}/status", tags=["Committees"])
-def change_committee_status(committee_id: str, new_status: CommitteeSessionTypes, db: Session = Depends(get_db)):
-    response = committee_operations.change_committee_status(db, committee_id, new_status)
-
-    # check for valid change
-    if response:
-        return {"message": "Status changed."}
-    else:
-        raise HTTPException(status_code=404, detail=f"Committee of ID {committee_id} not found.")
+        return response
+    
+    raise HTTPException(status_code=404, detail=f"Committee of ID {committee.committee_id} not found.")
 
 
 # change poll
@@ -100,6 +87,17 @@ async def change_committee_poll(committee_id: str, new_poll: CommitteePollingTyp
     if response:
         await manager.broadcast_poll_change(committee_id, new_poll)
         return {"message": "Poll changed."}
+    else:
+        raise HTTPException(status_code=404, detail=f"Committee of ID {committee_id} not found.")
+
+
+# delete a committee
+@router.delete("/committees/{id}", tags=["Committees"])
+async def delete_committee(committee_id: str, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+    response = committee_operations.delete_committee(db, committee_id)
+    
+    if response:
+        return {"message", "Success"}
     else:
         raise HTTPException(status_code=404, detail=f"Committee of ID {committee_id} not found.")
 

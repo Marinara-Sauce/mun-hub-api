@@ -58,9 +58,9 @@ class Committee(Base):
     # data
     committee_name = Column(String)
     committee_abbreviation = Column(String)
-    committee_description = Column(String)
-    committee_status = Column(Enum(CommitteeSessionTypes))
-    committee_announcement = Column(String)
+    committee_description = Column(String, default="")
+    committee_status = Column(Enum(CommitteeSessionTypes), default=CommitteeSessionTypes.OUT_OF_SESSION)
+    committee_announcement = Column(String, default="")
     committee_poll = Column(Enum(CommitteePollingTypes), default=CommitteePollingTypes.NONE)
 
 

@@ -8,6 +8,7 @@ insert into committees (committee_id, committee_name, committee_abbreviation, co
 insert into committees (committee_id, committee_name, committee_abbreviation, committee_description, committee_status, committee_announcement) values (8, 'Infrastructure Committee', 'INFA', 'A model UN committee focusing on healthcare access', 'IN_SESSION', 'Announcement: Model UN committee session will be held in Room 301.');
 insert into committees (committee_id, committee_name, committee_abbreviation, committee_description, committee_status, committee_announcement) values (9, 'Social Welfare Committee', 'SWC', 'A model UN committee focused on climate change', 'SUSPENDED_SESSION', 'Reminder: Committee chairs will hold a briefing session before the conference starts.');
 insert into committees (committee_id, committee_name, committee_abbreviation, committee_description, committee_status, committee_announcement) values (10, 'Trade Committee', 'TRAD', 'A model UN committee promoting gender equality', 'UNMOD', 'Announcement: Model UN committee session will be held in Room 301.');
+alter sequence committees_committee_id_seq start with 11;
 
 insert into delegations (delegation_id, delegation_name) values (1, 'Brazil');
 insert into delegations (delegation_id, delegation_name) values (2, 'Haiti');
