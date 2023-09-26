@@ -37,13 +37,16 @@ def get_committee_by_id(db: Session, committee_id: str) -> Optional[Committee]:
 def patch_committee(db: Session, committee_update: CommitteeUpdate) -> Optional[Committee]:
     old_committee = get_committee_by_id(db, committee_update.committee_id)
     
+    if old_committee is None:
+        return False
+    
     for key, value in committee_update.model_dump().items():
         setattr(old_committee, key, value)
     
     db.commit()
     db.refresh(old_committee)
     
-    return True
+    return old_committee
     
 
 def change_committee_poll(db: Session, committee_id: str, new_poll: CommitteePollingTypes):

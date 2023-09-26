@@ -19,7 +19,6 @@ class CommitteeUpdate(CommitteeBase):
     ommittee_announcement: str = ""
     committee_description: str = ""
     committee_status: CommitteeSessionTypes = CommitteeSessionTypes.OUT_OF_SESSION
-    committee_poll: CommitteePollingTypes = CommitteePollingTypes.NONE
 
 
 class Committee(CommitteeBase):
