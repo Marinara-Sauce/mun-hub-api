@@ -1,11 +1,10 @@
-import asyncio
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 
 from src.database.database import SessionLocal
-from src.models.models import AdminUser, CommitteePollingTypes, CommitteeSessionTypes
+from src.models.models import AdminUser, CommitteePollingTypes
 from src.schemas import committee_schema
 from src.operations import committee_operations
 
@@ -37,8 +36,9 @@ class CommitteeConnectionManager:
         self.active_connections[committee_id].remove(websocket)
     
     async def broadcast_poll_change(self, committee_id: str, poll: CommitteePollingTypes):
-        for con in self.active_connections[committee_id]:
-            await con.send_json(poll)
+        if committee_id in self.active_connections:
+            for con in self.active_connections[committee_id]:
+                await con.send_json(poll)
  
 
 manager = CommitteeConnectionManager()
@@ -69,7 +69,7 @@ def create_committee(committee: committee_schema.CommitteeCreate, user: Annotate
 
 # Patch committee
 @router.patch("/committees", tags=["Committees"])
-def patch_committee(committee: committee_schema.Committee, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+def patch_committee(committee: committee_schema.CommitteeUpdate, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
     response = committee_operations.patch_committee(db, committee)
     
     if response:
@@ -80,7 +80,7 @@ def patch_committee(committee: committee_schema.Committee, user: Annotated[Admin
 
 # change poll
 @router.put("/committees/{committee_id}/poll", tags=["Committees"])
-async def change_committee_poll(committee_id: str, new_poll: CommitteePollingTypes, db: Session = Depends(get_db)):
+async def change_committee_poll(committee_id: str, new_poll: CommitteePollingTypes, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
     response = committee_operations.change_committee_poll(db, committee_id, new_poll)
     
     # check for valid change

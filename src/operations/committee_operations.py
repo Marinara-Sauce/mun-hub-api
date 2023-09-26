@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from src.models.models import Committee, CommitteePollingTypes, CommitteeSessionTypes
-from src.schemas.committee_schema import CommitteeCreate
+from src.schemas.committee_schema import CommitteeCreate, CommitteeUpdate
 
 
 def get_committees(db: Session):
@@ -34,15 +34,14 @@ def get_committee_by_id(db: Session, committee_id: str) -> Optional[Committee]:
     return db.query(Committee).filter(Committee.committee_id == committee_id).first()
 
 
-def patch_committee(db: Session, committee: Committee) -> Optional[Committee]:
-    old_committee = get_committee_by_id(db, committee.committee_id)
+def patch_committee(db: Session, committee_update: CommitteeUpdate) -> Optional[Committee]:
+    old_committee = get_committee_by_id(db, committee_update.committee_id)
     
-    if old_committee is None:
-        return False
-    
-    old_committee = committee
+    for key, value in committee_update.model_dump().items():
+        setattr(old_committee, key, value)
     
     db.commit()
+    db.refresh(old_committee)
     
     return True
     
