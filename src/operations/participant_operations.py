@@ -1,15 +1,7 @@
 from typing import Optional
-
-from src.schemas.committee_schema import Committee
-
-PARTICIPANT_ID_PREFIX = "PARTICIPANT"
-
 from sqlalchemy.orm import Session
-
-from src.database.create_id import create_id
-from src.models.models import Participant
-from src.schemas import participant_schema
-
+from src.models.models import Committee, Participant
+from fastapi import HTTPException, status
 
 # get participants
 def get_participants(db: Session):
@@ -21,22 +13,33 @@ def get_participant_by_id(db: Session, participant_id: str) -> Optional[Particip
     return db.query(Participant).filter(Participant.participant_id == participant_id).first()
 
 
-# create participant
-def create_participant(db: Session, user: participant_schema.ParticipantCreate) -> Optional[Participant]:
-    # check for valid committee
-    if not db.query(Committee).filter(Committee.committee_id == user.committee_id).first():
-        return None
-
-    # check for valid delegation
-    if not db.query(Committee).filter(Committee.committee_id == user.delegation_id).first():
-        return None
-
-    # TODO: Check valid country code
-
-    # create participant
-    db_user = Participant(participant_id=create_id(PARTICIPANT_ID_PREFIX), committee_id=user.committee_id,
-                          delegation_id=user.delegation_id, country_code=user.country_code)
-    db.add(db_user)
+# add many delegations to a single committee
+def create_multiple_participants(db: Session, committee_id: int, delegation_ids: [int]) -> [Participant]:
+    if not db.query(Committee).filter(Committee.committee_id == committee_id).first():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Commitee {committee_id} Not Found"
+        )
+    
+    participants = [Participant(committee_id=committee_id, delegation_id=d) for d in delegation_ids]
+    
+    db.add_all(participants) # TODO: Catch unique errors
     db.commit()
-    db.refresh(db_user)
-    return db_user
+
+    return participants
+
+
+# remove a delegation from a committee
+def remove_participant(db: Session, committee_id: int, delegation_id: int) -> bool:
+    participant = db.query(Participant).filter(Participant.committee_id == committee_id).filter(Participant.delegation_id == delegation_id).first()
+
+    if participant is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Could not find delegation with id: {delegation_id} in committee: {committee_id}"
+        )
+    
+    db.delete(participant)
+    db.commit()
+    
+    return participant

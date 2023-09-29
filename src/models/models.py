@@ -1,6 +1,6 @@
 from enum import IntEnum
 
-from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Enum
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Enum, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from src.database.database import Base
@@ -30,18 +30,15 @@ class Participant(Base):
     __tablename__ = "participants"
 
     # ids
-    participant_id = Column(Integer, primary_key=True, index=True, unique=True)
+    participant_id = Column(Integer, primary_key=True, index=True, unique=True, autoincrement=True)
 
     # foreign ids
     delegation_id = Column(Integer, ForeignKey("delegations.delegation_id"))
     committee_id = Column(Integer, ForeignKey("committees.committee_id"))
-
-    # relationships
-    delegation = relationship("Delegation", back_populates="participants")
-    committee = relationship("Committee", back_populates="participants")
-
-    # country information (use ISO database to get any additional information)
-    country_alpha_2 = Column(String, primary_key=True, index=True, nullable=True)
+    
+    __table_args__ = (
+        UniqueConstraint('delegation_id', 'committee_id', name='unique_delegation_committee'),
+    )
 
 
 class Committee(Base):
@@ -51,9 +48,9 @@ class Committee(Base):
     committee_id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
 
     # participants in delegation
-    participants = relationship("Participant", back_populates="committee")
-    speakerlists = relationship("SpeakerList", back_populates="committee")
-    working_papers = relationship("WorkingPaper", back_populates="committee")
+    delegations = relationship("Delegation", secondary="participants")
+    speakerlists = relationship("SpeakerList", back_populates="committee", cascade="all,delete")
+    working_papers = relationship("WorkingPaper", back_populates="committee", cascade="all,delete")
 
     # data
     committee_name = Column(String)
@@ -69,9 +66,6 @@ class Delegation(Base):
 
     # id
     delegation_id = Column(Integer, primary_key=True, index=True, unique=True)
-
-    # participants in delegation
-    participants = relationship("Participant", back_populates="delegation")
 
     # data
     delegation_name = Column(String)
