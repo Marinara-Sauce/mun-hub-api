@@ -1,9 +1,10 @@
-from typing import Optional
+from typing import List, Optional
 from fastapi import HTTPException, status
 
 from sqlalchemy.orm import Session
+from src.schemas.workingpaper_schema import WorkingPaperCreate, WorkingPaper
 
-from src.models.models import Committee, CommitteePollingTypes, Participant
+from src.models.models import Committee, CommitteePollingTypes, Participant, WorkingPaper
 from src.schemas.committee_schema import CommitteeCreate, CommitteeUpdate
 
 
@@ -125,4 +126,19 @@ def remove_participant(db: Session, committee_id: int, delegation_id: int) -> bo
     db.delete(participant)
     db.commit()
     
-    return participant
+    return True
+
+
+# add a working paper to a committee
+def add_working_paper(db: Session, working_paper: WorkingPaperCreate) -> Optional[WorkingPaper]:
+
+    db_working_paper = WorkingPaper(
+        committee_id = working_paper.committee_id,
+        working_group_name = working_paper.working_group_name,
+        paper_link = working_paper.paper_link,
+    )
+
+    db.add(db_working_paper)
+    db.commit()
+
+    return db_working_paper
