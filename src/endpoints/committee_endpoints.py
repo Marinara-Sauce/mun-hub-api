@@ -104,21 +104,39 @@ async def delete_committee(committee_id: str, user: Annotated[AdminUser, Depends
 
 
 # add delegations
-@router.post("committees/{id}/participants", tags=["Committees"])
+@router.post("/committees/{id}/participants", tags=["Committees"])
 def add_delegates(committee_id: int, delegation_ids: List[int], user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
     return committee_operations.create_multiple_participants(db, committee_id, delegation_ids)
 
 
 # remove a delegation
-@router.delete("committees/{id}/participants", tags=["Committees"])
+@router.delete("/committees/{id}/participants", tags=["Committees"])
 def remove_delegate(committee_id: int, delegation_id: int, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
     return committee_operations.remove_participant(db, committee_id, delegation_id)
 
 
 # add a working paper
-@router.post("committees/working-paper", tags=["Committees"])
-def add_working_paper(working_paper: WorkingPaperCreate, user: Annotated[AdminUser, Depends(get_current_user)], db: Session):
+@router.post("/committees/working-paper", tags=["Committees"])
+def add_working_paper(working_paper: WorkingPaperCreate, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
     return committee_operations.add_working_paper(db, working_paper)
+
+
+# delete a working paper
+@router.delete("/committees/working-paper/{id}", tags=["Committees"])
+def delete_working_paper(working_paper_id: int, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+    return committee_operations.delete_working_paper(db, working_paper_id)
+
+
+# add a delegate to a working paper
+@router.post("/committees/working-paper/{id}", tags=["Committees"])
+def add_delegate_to_working_paper(working_paper_id: int, delegation_ids: List[int], user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+    return committee_operations.add_delegations_to_working_paper(db, working_paper_id, delegation_ids)
+
+
+# delete a member from a working paper
+@router.delete("/committees/working-paper/{working_paper_id}/remove", tags=["Committees"])
+def remove_delegation_from_working_paper(working_paper_id: int, delgation_id: int, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+    return committee_operations.remove_delegation_from_working_paper(db, working_paper_id, delgation_id)
 
 
 # websocket for polls

@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from src.schemas.workingpaper_schema import WorkingPaperCreate, WorkingPaper
 
-from src.models.models import Committee, CommitteePollingTypes, Participant, WorkingPaper
+from src.models.models import Committee, CommitteePollingTypes, Participant, WorkingPaper, WorkingPaperDelegation
 from src.schemas.committee_schema import CommitteeCreate, CommitteeUpdate
 
 
@@ -130,7 +130,7 @@ def remove_participant(db: Session, committee_id: int, delegation_id: int) -> bo
 
 
 # add a working paper to a committee
-def add_working_paper(db: Session, working_paper: WorkingPaperCreate) -> Optional[WorkingPaper]:
+def add_working_paper(db: Session, working_paper: WorkingPaperCreate):
 
     db_working_paper = WorkingPaper(
         committee_id = working_paper.committee_id,
@@ -140,5 +140,50 @@ def add_working_paper(db: Session, working_paper: WorkingPaperCreate) -> Optiona
 
     db.add(db_working_paper)
     db.commit()
+    db.refresh(db_working_paper)
+    
+    # add all delegations to the working paper
+    add_delegations_to_working_paper(db, db_working_paper.working_paper_id, working_paper.delegation_ids)
 
     return db_working_paper
+
+
+# add a delegation to a working paper
+def add_delegations_to_working_paper(db: Session, working_paper_id: int, delegation_id: [int]):
+    db_delegation_workingpaper = [WorkingPaperDelegation(working_paper_id = working_paper_id, delegation_id = d) for d in delegation_id]
+    
+    db.add_all(db_delegation_workingpaper)
+    db.commit()
+    
+    return db_delegation_workingpaper
+
+# remove a delegation from a working paper
+def remove_delegation_from_working_paper(db: Session, working_paper_id: int, delegation_id: int):
+    relationship = db.query(WorkingPaperDelegation).filter(WorkingPaperDelegation.working_paper_id == working_paper_id).filter(WorkingPaperDelegation.delegation_id == delegation_id).first()
+    
+    db.delete(relationship)
+    db.commit()
+    
+    return True
+
+
+# delete a working paper
+def delete_working_paper(db: Session, working_paper_id: int):
+    working_paper = db.query(WorkingPaper).filter(WorkingPaper.working_paper_id == working_paper_id).first()
+
+    if working_paper is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Could not find working paper with ID: {working_paper_id}"
+        )
+        
+    # M:N relationships don't work well with cascade, have to manually delete them
+    working_paper_delegations = db.query(WorkingPaperDelegation).filter(WorkingPaperDelegation.working_paper_id == working_paper_id)
+    
+    for d in working_paper_delegations:
+        db.delete(d)
+        
+    db.delete(working_paper)
+    db.commit()
+    
+    return True

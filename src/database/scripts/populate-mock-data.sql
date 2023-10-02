@@ -238,6 +238,7 @@ insert into workingpapers (working_paper_id, committee_id, paper_link, working_g
 insert into workingpapers (working_paper_id, committee_id, paper_link, working_group_name) values (23, 7, 'tmall.com', 'Pork');
 insert into workingpapers (working_paper_id, committee_id, paper_link, working_group_name) values (24, 4, 'netlog.com', 'Beef');
 insert into workingpapers (working_paper_id, committee_id, paper_link, working_group_name) values (25, 2, 'ow.ly', 'Salmon');
+ALTER SEQUENCE workingpapers_working_paper_id_seq RESTART WITH 26;
 
 insert into workingpaperdelegations (working_paper_relationship_id, working_paper_id, delegation_id) values (1, 3, 69);
 insert into workingpaperdelegations (working_paper_relationship_id, working_paper_id, delegation_id) values (2, 7, 94);
@@ -337,3 +338,4 @@ insert into workingpaperdelegations (working_paper_relationship_id, working_pape
 insert into workingpaperdelegations (working_paper_relationship_id, working_paper_id, delegation_id) values (97, 17, 88);
 insert into workingpaperdelegations (working_paper_relationship_id, working_paper_id, delegation_id) values (98, 25, 80);
 insert into workingpaperdelegations (working_paper_relationship_id, working_paper_id, delegation_id) values (99, 5, 43);
+ALTER SEQUENCE workingpaperdelegations_working_paper_relationship_id_seq RESTART WITH 101;
