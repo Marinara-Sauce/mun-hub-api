@@ -1,11 +1,11 @@
-import asyncio
-from typing import Annotated, Optional
+from typing import Annotated, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
+from src.schemas.workingpaper_schema import WorkingPaperCreate
 
 from src.database.database import SessionLocal
-from src.models.models import AdminUser, CommitteePollingTypes, CommitteeSessionTypes
+from src.models.models import AdminUser, CommitteePollingTypes
 from src.schemas import committee_schema
 from src.operations import committee_operations
 
@@ -37,8 +37,9 @@ class CommitteeConnectionManager:
         self.active_connections[committee_id].remove(websocket)
     
     async def broadcast_poll_change(self, committee_id: str, poll: CommitteePollingTypes):
-        for con in self.active_connections[committee_id]:
-            await con.send_json(poll)
+        if committee_id in self.active_connections:
+            for con in self.active_connections[committee_id]:
+                await con.send_json(poll)
  
 
 manager = CommitteeConnectionManager()
@@ -67,33 +68,20 @@ def create_committee(committee: committee_schema.CommitteeCreate, user: Annotate
     return committee_operations.create_committee(db, committee)
 
 
-# Change description
-@router.put("/committees/{committee_id}/description", tags=["Committees"])
-def change_committee_description(committee_id: str, new_description: str, db: Session = Depends(get_db)):
-    response = committee_operations.change_committee_description(db, committee_id, new_description)
-
-    # check for valid change
+# Patch committee
+@router.patch("/committees", tags=["Committees"])
+def patch_committee(committee: committee_schema.CommitteeUpdate, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+    response = committee_operations.patch_committee(db, committee)
+    
     if response:
-        return {"message": "Description changed."}
-    else:
-        raise HTTPException(status_code=404, detail=f"Committee of ID {committee_id} not found.")
-
-
-# change status
-@router.put("/committees/{committee_id}/status", tags=["Committees"])
-def change_committee_status(committee_id: str, new_status: CommitteeSessionTypes, db: Session = Depends(get_db)):
-    response = committee_operations.change_committee_status(db, committee_id, new_status)
-
-    # check for valid change
-    if response:
-        return {"message": "Status changed."}
-    else:
-        raise HTTPException(status_code=404, detail=f"Committee of ID {committee_id} not found.")
+        return response
+    
+    raise HTTPException(status_code=404, detail=f"Committee of ID {committee.committee_id} not found.")
 
 
 # change poll
 @router.put("/committees/{committee_id}/poll", tags=["Committees"])
-async def change_committee_poll(committee_id: str, new_poll: CommitteePollingTypes, db: Session = Depends(get_db)):
+async def change_committee_poll(committee_id: str, new_poll: CommitteePollingTypes, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
     response = committee_operations.change_committee_poll(db, committee_id, new_poll)
     
     # check for valid change
@@ -102,6 +90,53 @@ async def change_committee_poll(committee_id: str, new_poll: CommitteePollingTyp
         return {"message": "Poll changed."}
     else:
         raise HTTPException(status_code=404, detail=f"Committee of ID {committee_id} not found.")
+
+
+# delete a committee
+@router.delete("/committees/{id}", tags=["Committees"])
+async def delete_committee(committee_id: str, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+    response = committee_operations.delete_committee(db, committee_id)
+    
+    if response:
+        return {"message", "Success"}
+    else:
+        raise HTTPException(status_code=404, detail=f"Committee of ID {committee_id} not found.")
+
+
+# add delegations
+@router.post("/committees/{id}/participants", tags=["Committees"])
+def add_delegates(committee_id: int, delegation_ids: List[int], user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+    return committee_operations.create_multiple_participants(db, committee_id, delegation_ids)
+
+
+# remove a delegation
+@router.delete("/committees/{id}/participants", tags=["Committees"])
+def remove_delegate(committee_id: int, delegation_id: int, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+    return committee_operations.remove_participant(db, committee_id, delegation_id)
+
+
+# add a working paper
+@router.post("/committees/working-paper", tags=["Committees"])
+def add_working_paper(working_paper: WorkingPaperCreate, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+    return committee_operations.add_working_paper(db, working_paper)
+
+
+# delete a working paper
+@router.delete("/committees/working-paper/{id}", tags=["Committees"])
+def delete_working_paper(working_paper_id: int, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+    return committee_operations.delete_working_paper(db, working_paper_id)
+
+
+# add a delegate to a working paper
+@router.post("/committees/working-paper/{id}", tags=["Committees"])
+def add_delegate_to_working_paper(working_paper_id: int, delegation_ids: List[int], user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+    return committee_operations.add_delegations_to_working_paper(db, working_paper_id, delegation_ids)
+
+
+# delete a member from a working paper
+@router.delete("/committees/working-paper/{working_paper_id}/remove", tags=["Committees"])
+def remove_delegation_from_working_paper(working_paper_id: int, delgation_id: int, user: Annotated[AdminUser, Depends(get_current_user)], db: Session = Depends(get_db)):
+    return committee_operations.remove_delegation_from_working_paper(db, working_paper_id, delgation_id)
 
 
 # websocket for polls

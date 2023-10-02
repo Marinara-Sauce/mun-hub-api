@@ -1,12 +1,11 @@
-from typing import Optional
+from typing import List, Optional
+from fastapi import HTTPException, status
 
 from sqlalchemy.orm import Session
+from src.schemas.workingpaper_schema import WorkingPaperCreate, WorkingPaper
 
-from src.database.create_id import create_id
-from src.models.models import Committee, CommitteePollingTypes, CommitteeSessionTypes
-from src.schemas.committee_schema import CommitteeCreate
-
-COMMITTEE_ID_PREFIX = "COMMITTEE"
+from src.models.models import Committee, CommitteePollingTypes, Participant, WorkingPaper, WorkingPaperDelegation
+from src.schemas.committee_schema import CommitteeCreate, CommitteeUpdate
 
 
 def get_committees(db: Session):
@@ -14,28 +13,16 @@ def get_committees(db: Session):
 
 
 def create_committee(db: Session, user: CommitteeCreate):
-    db_user = Committee(committee_id=create_id(COMMITTEE_ID_PREFIX),
-                        country_alpha_2=user.country_alpha_2)
+    db_user = Committee(
+        committee_name=user.committee_name, 
+        committee_abbreviation=user.committee_abbreviation
+    )
+    
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    
     return db_user
-
-
-def delete_committee(db: Session, committee_id: str):
-    # verify that the committee exists
-    if db.query(Committee).filter(Committee.committee_id == committee_id).first().rowcount == 0:
-        raise Exception("Committee does not exist. [committee_id=" + committee_id + "]")
-
-    # delete element
-    q = db.query(Committee).filter(Committee.committee_id == committee_id).delete()
-
-    # check for success
-    if q.rowcount == 0:
-        db.rollback()
-        raise Exception("Delete failed." + q)
-    else:
-        db.commit()
 
 
 def get_committee_by_id(db: Session, committee_id: str) -> Optional[Committee]:
@@ -49,50 +36,19 @@ def get_committee_by_id(db: Session, committee_id: str) -> Optional[Committee]:
     return db.query(Committee).filter(Committee.committee_id == committee_id).first()
 
 
-def change_committee_description(db: Session, committee_id: str, new_description: str) -> bool:
-    """
-    Change the description of a committee.
-
-    :param db: Database session object
-    :param committee_id: Committee object to change
-    :param new_description: New description of the committee
-    :return: True if successful, False otherwise
-    """
-    # try getting committee object
-    committee = get_committee_by_id(db, committee_id)
-
-    if committee is None:
-        return False
-
-    # update
-    committee.committee_description = new_description
-
-    # commit
-    db.commit()
-
-
-def change_committee_status(db: Session, committee_id: int, new_status: CommitteeSessionTypes):
-    """
-    Change the status of a committee.
-
-    :param db: Database session object
-    :param committee_id: Committee object to change
-    :param new_status: New status of the committee
-    :return: True if successful, False otherwise
-    """
-    # try getting committee object
-    committee = get_committee_by_id(db, committee_id)
-
-    if committee is None:
-        return False
-
-    # update
-    committee.committee_status = new_status
-
-    # commit
-    db.commit()
+def patch_committee(db: Session, committee_update: CommitteeUpdate) -> Optional[Committee]:
+    old_committee = get_committee_by_id(db, committee_update.committee_id)
     
-    return True
+    if old_committee is None:
+        return False
+    
+    for key, value in committee_update.model_dump().items():
+        setattr(old_committee, key, value)
+    
+    db.commit()
+    db.refresh(old_committee)
+    
+    return old_committee
     
 
 def change_committee_poll(db: Session, committee_id: str, new_poll: CommitteePollingTypes):
@@ -114,6 +70,120 @@ def change_committee_poll(db: Session, committee_id: str, new_poll: CommitteePol
     committee.committee_poll = new_poll
 
     # commit
+    db.commit()
+    
+    return True
+
+
+def delete_committee(db: Session, committee_id: str):
+    committee = db.query(Committee).filter(Committee.committee_id == committee_id).first()
+    
+    if committee is None:
+        return False
+    
+    db.delete(committee)
+    db.commit()
+
+    return True
+
+
+# get participants
+def get_participants(db: Session):
+    return db.query(Participant).all()
+
+
+# get participant by ID
+def get_participant_by_id(db: Session, participant_id: str) -> Optional[Participant]:
+    return db.query(Participant).filter(Participant.participant_id == participant_id).first()
+
+
+# add many delegations to a single committee
+def add_participants(db: Session, committee_id: int, delegation_ids: [int]) -> [Participant]:
+    if not db.query(Committee).filter(Committee.committee_id == committee_id).first():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Commitee {committee_id} Not Found"
+        )
+    
+    participants = [Participant(committee_id=committee_id, delegation_id=d) for d in delegation_ids]
+    
+    db.add_all(participants) # TODO: Catch unique errors
+    db.commit()
+
+    return participants
+
+
+# remove a delegation from a committee
+def remove_participant(db: Session, committee_id: int, delegation_id: int) -> bool:
+    participant = db.query(Participant).filter(Participant.committee_id == committee_id).filter(Participant.delegation_id == delegation_id).first()
+
+    if participant is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Could not find delegation with id: {delegation_id} in committee: {committee_id}"
+        )
+    
+    db.delete(participant)
+    db.commit()
+    
+    return True
+
+
+# add a working paper to a committee
+def add_working_paper(db: Session, working_paper: WorkingPaperCreate):
+
+    db_working_paper = WorkingPaper(
+        committee_id = working_paper.committee_id,
+        working_group_name = working_paper.working_group_name,
+        paper_link = working_paper.paper_link,
+    )
+
+    db.add(db_working_paper)
+    db.commit()
+    db.refresh(db_working_paper)
+    
+    # add all delegations to the working paper
+    add_delegations_to_working_paper(db, db_working_paper.working_paper_id, working_paper.delegation_ids)
+
+    return db_working_paper
+
+
+# add a delegation to a working paper
+def add_delegations_to_working_paper(db: Session, working_paper_id: int, delegation_id: [int]):
+    db_delegation_workingpaper = [WorkingPaperDelegation(working_paper_id = working_paper_id, delegation_id = d) for d in delegation_id]
+    
+    db.add_all(db_delegation_workingpaper)
+    db.commit()
+    
+    return db_delegation_workingpaper
+
+# remove a delegation from a working paper
+def remove_delegation_from_working_paper(db: Session, working_paper_id: int, delegation_id: int):
+    relationship = db.query(WorkingPaperDelegation).filter(WorkingPaperDelegation.working_paper_id == working_paper_id).filter(WorkingPaperDelegation.delegation_id == delegation_id).first()
+    
+    db.delete(relationship)
+    db.commit()
+    
+    return True
+
+
+# delete a working paper
+def delete_working_paper(db: Session, working_paper_id: int):
+    working_paper = db.query(WorkingPaper).filter(WorkingPaper.working_paper_id == working_paper_id).first()
+
+    if working_paper is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Could not find working paper with ID: {working_paper_id}"
+        )
+        
+    # M:N relationships don't work well with cascade, have to manually delete them
+    working_paper_delegations = db.query(WorkingPaperDelegation).filter(WorkingPaperDelegation.working_paper_id == working_paper_id)
+    
+    for d in working_paper_delegations:
+        db.delete(d)
+        
+    db.delete(working_paper)
     db.commit()
     
     return True
