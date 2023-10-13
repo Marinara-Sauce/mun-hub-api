@@ -1,3 +1,6 @@
+# This Repo is Archived
+The code has been moved to the [RIT-MUN-HUB](https://github.com/Marinara-Sauce/rit-mun-hub) repo for easier development.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Model UN Hub
 This overall project is a hub that can be used for Model UN conferences. This specific project is the server to accompany the UI found [here](https://github.com/Marinara-Sauce/mun-hub-ui).
 
